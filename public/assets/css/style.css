@@ -291,6 +291,9 @@ header .head-side {
 .profile-info-item {
     text-align: center;
 }
+.profile-info-item a {
+    text-decoration: none;
+}
 .profile-info-item-n {
     font-weight: bold;
     font-size:20px;
@@ -390,6 +393,7 @@ header .head-side {
 }
 .full-user-photos .user-photo-item {
     margin:0;
+    max-width: 100%;
 }
 
 .feed-pagination a {
@@ -423,6 +427,59 @@ header .head-side {
 }
 .button:hover {
     background-color:#477dbb;
+}
+
+.form-avatar {
+    margin: 30px 0;
+    font-size: 15px;
+}
+
+.form-cover {
+    margin: 30px 0;
+    font-size: 15px;
+}
+
+.form-avatar-cover {
+    border-bottom: 1px solid #AAA ;
+}
+
+.form-avatar-cover h1 {
+    font-size: 20px;
+}
+
+.form-avatar-cover input[type=file] {
+    padding: 10px 20px;
+}
+
+.form-config-data {
+    padding: 10px 0;
+    border-bottom: 1px solid #AAA ;
+}
+
+.form-config-data input[type=text] {
+    width: 60%;
+    height: 40px;
+    padding: 10px;
+    margin: 5px 5px;
+    border: 0;
+    outline: none;
+}
+
+.form-config-name,
+.form-config-birthdate,
+.form-config-email,
+.form-config-city,
+.form-config-work {
+    margin: 30px 0;
+}
+
+.form-config-pass {
+    padding: 10px 0;
+}
+
+.form-config-new-pass,
+.form-config-conf-new-pass {
+    margin: 15px 0;
 }
 
 @media (max-width: 992px) {
