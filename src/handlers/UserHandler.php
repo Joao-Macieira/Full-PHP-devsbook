@@ -177,30 +177,8 @@ class UserHandler {
         return $users;
     }
 
-    public static function updateUserEmail($id, $email) {
-        User::update()
-            ->set('email', $email)
-            ->where('id', $id)
-        ->execute();
-    }
-
-    public static function updateUserData($id, $name, $birthdate, $city, $work) {
-        User::update()
-            ->set([
-                'name' => $name,
-                'birthdate' => $birthdate,
-                'city' => $city,
-                'work' => $work
-            ])
-            ->where('id', $id)
-        ->execute();
-    }
-
-    public static function updatePass($id, $pass) {
-        $hash = password_hash($pass, PASSWORD_DEFAULT);
-
-        User::update()
-            ->set('password', $hash)
+    public static function updateUser($updateFields, $id) {
+        User::update($updateFields)
             ->where('id', $id)
         ->execute();
     }

@@ -35,20 +35,32 @@ class ConfigController extends Controller {
     }
 
     public function updateInfo() { //indexAction
-        $user = UserHandler::getUser($this->loggedUser->id);
-
-        // Verify images
-
-        // Verify User data
-
         $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_ADD_SLASHES);
         $birthdate = filter_input(INPUT_POST, 'birthdate', FILTER_SANITIZE_ADD_SLASHES);
         $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
         $city = filter_input(INPUT_POST, 'city', FILTER_SANITIZE_ADD_SLASHES);
         $work = filter_input(INPUT_POST, 'work', FILTER_SANITIZE_ADD_SLASHES);
+        $pass = filter_input(INPUT_POST, 'pass');
+        $pass2 = filter_input(INPUT_POST, 'pass2');
 
+        if($name && $email) {
+            $updateFields = [];
 
-        if($name && $birthdate) {
+            $user = UserHandler::getUser($this->loggedUser->id);
+
+            // E-mail
+
+            if($user->email != $email){
+                if(!UserHandler::emailExists($email)) {
+                    $updateFields['email'] = $email;
+                } else {
+                    $_SESSION['flash'] = 'E-mail já existe!';
+                    $this->redirect('/config');
+                }
+            }
+
+            //Birthdate
+
             $birthdate = explode('/', $birthdate);
             if(count($birthdate) != 3) {
                 $_SESSION['flash'] = "Data de nascimento inválida";
@@ -60,42 +72,97 @@ class ConfigController extends Controller {
                 $_SESSION['flash'] = "Data de nascimento inválida";
                 $this->redirect('/config');
             }
+            $updateFields['birthdate'] = $birthdate;
 
-            if($user->email == $email) {
-                $_SESSION['flash'] = 'Você já utiliza este E-mail!';
-                $this->redirect('/config');
+            //Password
+
+            if(!empty($pass) && !empty($pass2)) {
+                if($pass === $pass2) {
+                    $hash = password_hash($pass, PASSWORD_DEFAULT);
+                    $updateFields['password'] = $hash;
+                } else {
+                    $_SESSION['flash'] = 'As senhas não batem!';
+                    $this->redirect('/config');
+                }
             }
 
-            if(UserHandler::emailExists($email) === true) {
-                $_SESSION['flash'] = 'Este E-mail já existe, por favor tente outro!';
-                $this->redirect('/config');
+            //Campos normais
+
+            $updateFields['name'] = $name;
+            $updateFields['city'] = $city;
+            $updateFields['work'] = $work;
+
+            //Avatar
+
+            if(isset($_FILES['avatar']) && !empty($_FILES['avatar']['tmp_name'])) {
+                $newAvatar = $_FILES['avatar'];
+
+                if(in_array($newAvatar['type'], ['image/jpeg', 'image/jpg', 'image/png'])) {
+                    $avatarName = $this->cutImage($newAvatar, 200, 200, 'media/avatars');
+                    $updateFields['avatar'] = $avatarName;
+                }
             }
 
-            if(!empty($email)) {
-                UserHandler::updateUserEmail($this->loggedUser->id, $email);
+
+            //Cover
+
+            if(isset($_FILES['cover']) && !empty($_FILES['cover']['tmp_name'])) {
+                $newCover = $_FILES['cover'];
+
+                if(in_array($newCover['type'], ['image/jpeg', 'image/jpg', 'image/png'])) {
+                    $coverName = $this->cutImage($newCover, 850, 310, 'media/covers');
+                    $updateFields['cover'] = $coverName;
+                }
             }
 
-            if(UserHandler::updateUserData($this->loggedUser->id, $name, $birthdate, $city, $work)){
-                $this->redirect('/config');
-            }
+            UserHandler::updateUser($updateFields, $this->loggedUser->id);
         }
-
-        // Verify password
-
-        $pass = filter_input(INPUT_POST, 'pass');
-        $pass2 = filter_input(INPUT_POST, 'pass2');
-
-        if($pass && $pass2) {
-            if($pass == $pass2) {
-                UserHandler::updatePass($this->loggedUser->id, $pass);
-                $this->redirect('/config');
-            } else {
-                $_SESSION['flash'] = 'Digite a mesma senha nos dois campos!';
-                $this->redirect('/config');
-            }
-        }
-
 
         $this->redirect('/config');
+    }
+
+    private function cutImage($file, $w, $h, $folder) {
+        list($widthOrig, $heightOrig) = getimagesize($file['tmp_name']);
+        $ratio = $widthOrig / $heightOrig;
+
+        // Image size
+        $newWidth = $w;
+        $newHeight = $newWidth / $ratio;
+
+        if($newHeight < $h) {
+            $newHeight = $h;
+            $newWidth = $newHeight * $ratio;
+        }
+
+        // Image Position
+        $x = $w - $newWidth;
+        $y = $h - $newHeight;
+        $x = $x < 0 ? $x/2 : $x;
+        $y = $y < 0 ? $y/2 : $y;
+
+        // Image result
+        $finalImage = imagecreatetruecolor($w, $h);
+        switch($file['type']) {
+            case 'image/jpeg':
+            case 'image/jpg':
+                $image = imagecreatefromjpeg($file['tmp_name']);
+            break;
+            case 'image/png':
+                $image = imagecreatefrompng($file['tmp_name']);
+            break;
+        }
+
+        imagecopyresampled(
+            $finalImage, $image, //Final Image
+            $x, $y, 0, 0,   // New positions
+            $newWidth, $newHeight, $widthOrig, $heightOrig //new sizes / old sizes
+        );
+
+        $fileName = md5(time().rand(0, 9999)).'.jpg';
+
+        imagejpeg($finalImage, $folder.'/'.$fileName);
+
+        return $fileName;
+
     }
 }

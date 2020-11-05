@@ -1,7 +1,7 @@
 <?php $render('header', ['loggedUser' => $loggedUser]); ?>
 
 <section class="container main">
-    <?php $render('sidebar', ['activeMenu'=>'search']); ?> 
+    <?php $render('sidebar', ['activeMenu'=>'config']); ?> 
 
     <section class="feed mt-10">
 
@@ -18,11 +18,13 @@
                         <!-- Avatar/Cover image -->
                         <div class="form-config-avatar">
                             Novo Avatar: <br>
-                            <input type="file" name="avatar">
+                            <input type="file" name="avatar"><br>
+                            <img class="image-edit" src="<?=$base?>/media/avatars/<?=$user->avatar;?>" alt="Avatar do usuário">
                         </div>
                         <div class="form-config-cover">
                             Nova Capa: <br>
-                            <input type="file" name="avatar">
+                            <input type="file" name="cover"><br>
+                            <img class="image-edit" src="<?=$base?>/media/covers/<?=$user->cover;?>" alt="Cover do usuário">
                         </div>
                         <hr>
 
@@ -38,7 +40,7 @@
                         </div>
                         <div class="form-config-email">
                             E-mail: <br>
-                            <input type="text" name="email" placeholder="<?=$user->email;?>">
+                            <input type="text" name="email" value="<?=$user->email;?>">
                         </div>
                         <div class="form-config-city">
                             Cidade: <br>
