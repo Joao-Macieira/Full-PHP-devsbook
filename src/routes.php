@@ -23,6 +23,7 @@ $router->get('/fotos', 'ProfileController@photos');
 
 $router->get('/pesquisa', 'SearchController@index');
 
+$router->post('/config/upateInfo', 'ConfigController@updateInfo');
 $router->get('/config', 'ConfigController@index'); // Criar rotas dos forms, continuar o CSS da senha e criar as funções
 
 $router->get('/sair', 'LoginController@logout');

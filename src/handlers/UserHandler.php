@@ -65,6 +65,7 @@ class UserHandler {
             $user = new User();
             $user->id = $data['id'];
             $user->name = $data['name'];
+            $user->email = $data['email'];
             $user->birthdate = $data['birthdate'];
             $user->city = $data['city'];
             $user->work = $data['work'];
@@ -174,5 +175,33 @@ class UserHandler {
         }
 
         return $users;
+    }
+
+    public static function updateUserEmail($id, $email) {
+        User::update()
+            ->set('email', $email)
+            ->where('id', $id)
+        ->execute();
+    }
+
+    public static function updateUserData($id, $name, $birthdate, $city, $work) {
+        User::update()
+            ->set([
+                'name' => $name,
+                'birthdate' => $birthdate,
+                'city' => $city,
+                'work' => $work
+            ])
+            ->where('id', $id)
+        ->execute();
+    }
+
+    public static function updatePass($id, $pass) {
+        $hash = password_hash($pass, PASSWORD_DEFAULT);
+
+        User::update()
+            ->set('password', $hash)
+            ->where('id', $id)
+        ->execute();
     }
 }
