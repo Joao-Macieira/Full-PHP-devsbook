@@ -24,7 +24,9 @@ $router->get('/fotos', 'ProfileController@photos');
 $router->get('/pesquisa', 'SearchController@index');
 
 $router->post('/config/upateInfo', 'ConfigController@updateInfo');
-$router->get('/config', 'ConfigController@index'); 
+$router->get('/config', 'ConfigController@index');
+
+$router->get('/ajax/like/{id}', 'AjaxController@like');
 
 $router->get('/sair', 'LoginController@logout');
 
