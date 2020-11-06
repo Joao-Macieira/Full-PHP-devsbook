@@ -11,6 +11,7 @@ $router->get('/cadastro', 'LoginController@signup'); //Cadastrar
 $router->post('/cadastro', 'LoginController@signupAction'); // Ação para receber dados cadastrais
 
 $router->post('/post/new', 'PostController@new');
+$router->get('/post/{id}/delete', 'PostController@delete');
 
 $router->get('/perfil/{id}/fotos', 'ProfileController@photos');
 $router->get('/perfil/{id}/amigos', 'ProfileController@friends');
@@ -27,6 +28,8 @@ $router->post('/config/upateInfo', 'ConfigController@updateInfo');
 $router->get('/config', 'ConfigController@index');
 
 $router->get('/ajax/like/{id}', 'AjaxController@like');
+$router->post('/ajax/comment', 'AjaxController@comment');
+$router->post('/ajax/upload', 'AjaxController@upload');
 
 $router->get('/sair', 'LoginController@logout');
 
